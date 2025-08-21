@@ -8,7 +8,7 @@
 PLAT= wasi
 
 # WASI SDK root (override from env if you like)
-WASI_SDK ?= /Users/b0m00mi/dev/wasi-sdk-27.0-x86_64-macos
+WASI_SDK ?= /home/bgmerrell/dev/wasi-sdk-27.0-x86_64-linux
 
 # Toolchain
 CC      = $(WASI_SDK)/bin/clang --target=wasm32-wasi --sysroot=$(WASI_SDK)/share/wasi-sysroot
@@ -20,10 +20,10 @@ RM      = rm -f
 CFLAGS  = -O2 -Wall -Wextra -DLUA_COMPAT_5_2 $(SYSCFLAGS) $(MYCFLAGS) \
           -g -D_WASI_EMULATED_GETPID -D_WASI_EMULATED_SIGNAL -D_WASI_EMULATED_PROCESS_CLOCKS \
           -I/opt/include -isystem /opt/include \
-          -mllvm -wasm-enable-sjlj
+          -mllvm -wasm-enable-sjlj -fwasm-exceptions
 
 # Linker flags (use wasm-ld explicitly)
-MYLDFLAGS = -fuse-ld=$(WASI_SDK)/bin/wasm-ld
+MYLDFLAGS = -fuse-ld=$(WASI_SDK)/bin/wasm-ld -fwasm-exceptions
 
 # Libraries & search paths
 #   - Keep search paths and base libs (-lm -lc) here
@@ -38,7 +38,7 @@ SYSCFLAGS =
 SYSLIBS  =
 
 # WASI emulation shims we actually use
-MYLIBS   = -lwasi-emulated-signal -lwasi-emulated-process-clocks -lwasi-emulated-getpid
+MYLIBS   = -lwasi-emulated-signal -lwasi-emulated-process-clocks -lwasi-emulated-getpid -lsetjmp
 
 # Extra object files to link (WASI stubs live here; no linker flags!)
 MYOBJS   = ./platform/wasi/wasi_stubs.o
